@@ -1,0 +1,105 @@
+#! /bin/bash
+
+# The interval timer script for running taskXDF monitor script 
+# Place in same folder as the target script ($target, defined below).
+# Suggestion:   run this timer using a 2 to 5 min interval, ex: $ ./taskXDF-mon-timer 5
+
+target=taskXDF-mon
+script="$(basename -- $0)"
+
+grn='\033[0;32m'
+brn='\033[0;33m'
+prpl='\033[1;35m'
+nc='\033[0m'
+ital='\033[0;3m'
+grnital='\033[0;32;3m'
+
+if [ "$#" -ne 1 ] || [[ "$1" =~ help|about ]] || [[ "$1" =~ -[0-9] ]]; then
+    echo
+    echo "  A time interval, in minutes, is required,
+    e.g., $0 5
+
+    A time interval of 0 (zero) provides a one-off reading of $target, otherwise
+        a non-zero interval time provides ongoing readings. 
+        Executing the $target script directly also provides a one-off reading.
+
+    Supported AMD GPUs: Ellesmere, Polaris, Vega, or Navi that are running
+        Einstein@Home O2MDF gravitational wave GPU tasks.
+
+    A log file of Terminal output is created in the current folder.
+
+    For explanation of data reported: $0 --header."
+    echo
+    exit 0
+
+elif [ "$1" == '--header' ]; then
+    echo
+    echo "Report header:"
+    echo -n "date     time   │ queued │ VRAM% │ GTT% │ taskGB │ X │ "
+    printf "DFs: ${grn}[running]${nc} ${prpl}[waiting]${nc} ${brn}[ready]${nc}\n"
+    echo "Datetime of $target script execution
+----------------│ queued: total # of tasks
+-------------------------│ %'s: high card, max GPU memory in use
+----------------------------------------│ taskGB: high card, avg task VRAM GB used
+-------------------------------------------------│ X: task multiple
+-----------------------------------------------------│ Delta Frequencies of tasks"
+    echo "NOTES:"
+    echo "'High card' is the card with the highest value among all active cards."
+    echo "DF values are listed from most progressed to least progessed tasks."
+    echo "When all running DFs are equal, taskGB is the GB requirement of that DF."
+    printf "${brn}'ready' is next task 'Ready to run', one listed for each active card.${nc}\n"
+    echo
+    exit 0
+
+elif [[ "$1" =~ [a-zA-Z] ]]; then
+    echo "Invalid parameter. Try: $0 --help"
+    exit 0
+
+elif (( "$1" == 0 )); then
+    once=run-once
+fi
+
+
+# Provide an initial information message when timer is started.
+printf "Currently running $script with an interval of $1 minutes. (stop with ctrl-c)\n\n"
+echo -n "date     time   │ queued │ VRAM% │ GTT% │ taskGB │ X │ "
+printf "DFs: ${grn}[running]${nc} ${prpl}[waiting]${nc} ${brn}[ready]${nc}\n"
+echo -n "----------------│--------│-------│------│--------│---│"
+echo "----------------------------------------"
+
+# Run continuously until manually stopped. 
+# Need to stop after initial cycle if time argument is 0 (var $once is set).
+# Need to provide user an occasional reminder of how to stop the script.
+#   The cycle interval, [ $cycle -eq 20 ], can be set to your liking.
+cycle=0
+yikes=0
+while true
+do
+    /bin/bash ./$target
+
+    if [ -n "${once-}" ]; then
+        break
+    fi
+
+    sleep ${1}m
+    ((cycle++))
+    ((yikes++))
+    if (( $cycle == 20 )); then
+        echo "This timer script can be stopped with ctrl-c. 
+        Currently running $script on an interval of $1 minutes."
+        echo
+        echo -n "date     time   │ queued │ VRAM% │ GTT% │ taskGB │ X │ "
+        printf "DFs: ${grn}[running]${nc} ${prpl}[waiting]${nc} ${brn}[ready]${nc}\n"
+        echo -n "----------------│--------│-------│------│--------│---│"
+        echo "----------------------------------------"
+        count=0
+    fi
+
+    if (( $yikes >= 2 * 10**4 )); then
+        days=$(($1 * yikes / 60 / 24))
+        printf "\n   **** YIKES! $script has been running for $yikes cycles, $days days. ****\n"
+        printf "Just in case you forgot about me, I will EXIT now....\n\n"
+        exit 0
+    fi
+done
+
