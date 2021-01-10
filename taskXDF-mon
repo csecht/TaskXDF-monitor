@@ -270,14 +270,15 @@ prpl='\033[1;35m'
 nc='\033[0m'
 ital='\033[0;3m'
 grnital='\033[0;32;3m'
-
+blue='\x1b[1;38;5;33m'  # Blue and orange are better for red-gree color blind users
+orng='\x1b[1;38;5;202m'
 
 # Need pretty terminal output,
 # queued │ VRAM% │ GTT% │ taskGB │
 pad=" %5d │ %5d │ %4.2f │ %6.2f │" 
 printf "$date $time │ "                                           | tee -a $log_file
 printf "$pad" "$total_tasks" "$vpct_curr" "$gttpct_fmt" "$taskGB" | tee -a $log_file
-printf " ${curr_X} │ ${grn}[$runDF_all]${nc} ${prpl}[$waitDF_all]${nc} ${brn}[$readyDF_lookahead]${nc}\n"
+printf " ${curr_X} │ ${blue}[$runDF_all]${nc} ${orng}[$waitDF_all]${nc} ${brn}[$readyDF_lookahead]${nc}\n"
 # ..but also need to remove font color escape codes from file text.
 printf " ${curr_X} │ [$runDF_all] [$waitDF_all] [$readyDF_lookahead]\n" >> $log_file
 
