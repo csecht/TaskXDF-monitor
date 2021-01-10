@@ -13,6 +13,8 @@ prpl='\033[1;35m'
 nc='\033[0m'
 ital='\033[0;3m'
 grnital='\033[0;32;3m'
+blue='\x1b[1;38;5;33m'  # Blue and orange are better for red-gree color blind users
+orng='\x1b[1;38;5;202m'
 
 if [ "$#" -ne 1 ] || [[ "$1" =~ help|about ]] || [[ "$1" =~ -[0-9] ]]; then
     echo
@@ -36,7 +38,7 @@ elif [ "$1" == '--header' ]; then
     echo
     echo "Report header:"
     echo -n "date     time   │ queued │ VRAM% │ GTT% │ taskGB │ X │ "
-    printf "DFs: ${grn}[running]${nc} ${prpl}[waiting]${nc} ${brn}[ready]${nc}\n"
+    printf "DFs: ${blue}[running]${nc} ${orng}[waiting]${nc} ${brn}[ready]${nc}\n"
     echo "Datetime of $target script execution
 ----------------│ queued: total # of tasks
 -------------------------│ %'s: high card, max GPU memory in use
@@ -63,7 +65,7 @@ fi
 # Provide an initial information message when timer is started.
 printf "Currently running $script with an interval of $1 minutes. (stop with ctrl-c)\n\n"
 echo -n "date     time   │ queued │ VRAM% │ GTT% │ taskGB │ X │ "
-printf "DFs: ${grn}[running]${nc} ${prpl}[waiting]${nc} ${brn}[ready]${nc}\n"
+printf "DFs: ${blue}[running]${nc} ${orng}[waiting]${nc} ${brn}[ready]${nc}\n"
 echo -n "----------------│--------│-------│------│--------│---│"
 echo "----------------------------------------"
 
@@ -89,7 +91,7 @@ do
         Currently running $script on an interval of $1 minutes."
         echo
         echo -n "date     time   │ queued │ VRAM% │ GTT% │ taskGB │ X │ "
-        printf "DFs: ${grn}[running]${nc} ${prpl}[waiting]${nc} ${brn}[ready]${nc}\n"
+        printf "DFs: ${blue}[running]${nc} ${orng}[waiting]${nc} ${brn}[ready]${nc}\n"
         echo -n "----------------│--------│-------│------│--------│---│"
         echo "----------------------------------------"
         count=0
