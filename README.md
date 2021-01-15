@@ -14,6 +14,8 @@ Data are written to the Terminal window and to a log file that is created in the
 General use instructions are provided when the timer script is executed without arguments or with the --help or --about command line arguments. 
 For explanation of data reported, use the --header argument.
 
-Tips:   Run the timer using a 2 to 5 min interval, e.g., ~$ ./taskXDF-mon-timer 5
-        A time interval of 0 provides a one-off reading. Otherwise a non-zero interval time provides ongoing readings. 
-        Executing the taskXDF-mon directly, if it is made executable, can also provide a one-off reading.
+##Tips:   
+Run the timer using a 2 to 5 min interval, e.g., ~$ ./taskXDF-mon-timer 5 .
+
+A time interval of 0 provides a one-off reading. Otherwise, a non-zero interval time provides ongoing readings. 
+Executing the taskXDF-mon directly, if it is made executable, can also provide a one-off reading.
